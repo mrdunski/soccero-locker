@@ -1,0 +1,38 @@
+plugins {
+    id 'pl.allegro.tech.build.axion-release' version '1.3.2'
+    id "com.bmuschko.docker-java-application" version "3.0.6"
+}
+
+scmVersion {
+    versionCreator 'versionWithBranch'
+}
+
+group 'dk.kmd'
+version scmVersion.version
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: "com.bmuschko.docker-java-application"
+
+mainClassName = 'com.leanforge.game.GameBootApplication'
+applicationDefaultJvmArgs = ["-Xmx256m"]
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web:1.+"
+    compile 'com.github.Ullink:simple-slack-api:0.6.0'
+
+    testCompile "org.codehaus.groovy:groovy-all:2.4.10"
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+    testCompile "org.spockframework:spock-spring:1.1-groovy-2.4"
+    testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.5'
+    testCompile "org.springframework.boot:spring-boot-starter-test:1.+"
+}
