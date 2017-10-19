@@ -5,11 +5,11 @@ node ('java') {
     // junit '**/test-results/*.xml'
 }
 
-node ('java') {
-    stage 'release'
-    checkout scm
-    sh './gradlew clean release pushRelease'
-}
+//node ('java') {
+//    stage 'release'
+//    checkout scm
+//    sh './gradlew clean release pushRelease'
+//}
 
 node ('docker') {
     stage 'assemble'
