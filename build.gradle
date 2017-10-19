@@ -1,5 +1,5 @@
 plugins {
-    id 'pl.allegro.tech.build.axion-release' version '1.3.2'
+    id 'pl.allegro.tech.build.axion-release' version '1.8.1'
     id "com.bmuschko.docker-java-application" version "3.2.0"
 }
 
@@ -20,17 +20,6 @@ applicationDefaultJvmArgs = ["-Xmx256m"]
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext {
-    dockerUsername = 'changeme'
-    dockerPassword = 'changeme'
-}
-
-docker {
-    registryCredentials {
-        username = project.ext.dockerUsername
-        password = project.ext.dockerPassword
-    }
-}
 
 repositories {
     mavenLocal()
@@ -39,7 +28,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-web:1.+"
+    compile 'org.springframework.boot:spring-boot-starter-actuator:1.+'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.+'
+    compile 'org.springframework.boot:spring-boot-starter-websocket:1.+'
     compile 'com.github.Ullink:simple-slack-api:0.6.0'
 
     testCompile "org.codehaus.groovy:groovy-all:2.4.10"
@@ -47,4 +38,54 @@ dependencies {
     testCompile "org.spockframework:spock-spring:1.1-groovy-2.4"
     testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.5'
     testCompile "org.springframework.boot:spring-boot-starter-test:1.+"
+}
+
+task('generateK8sFile') {
+    file("build/${project.name}.yaml").text = """
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: soccero-locker
+  labels:
+    app: soccero-locker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soccero-locker
+  template:
+    metadata:
+      labels:
+        app: soccero-locker
+    spec:
+      containers:
+      - name: soccero-locker
+        image: mrdunski/soccero-locker:${project.version}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SLACK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slacksecret
+              key: slackToken
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: soccero-locker
+spec:
+  selector:
+    app: soccero-locker
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+"""
+}
+
+task('dockerCustomPush', type: Exec, dependsOn: 'dockerBuildImage') {
+    executable 'docker'
+    args 'push', "mrdunski/soccero-locker:${project.version}"
 }
