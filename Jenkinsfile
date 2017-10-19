@@ -15,7 +15,7 @@ node ('java') {
 
 node ('docker') {
     stage('build docker') {
-        withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'user', usernameVariable: 'password')]) {
+        withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'password', usernameVariable: 'user')]) {
             sh "docker login -u $user -p $password"
             checkout scm
             sh 'chmod +x ./gradlew'
