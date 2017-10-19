@@ -19,7 +19,8 @@ node ('docker') {
             sh "docker login -u $user -p $password"
             checkout scm
             sh 'chmod +x ./gradlew'
-            sh "./gradlew clean dockerBuildImage dockerPushImage -PdockerUsername=$user -PdockerPassword=$password"
+            sh "./gradlew clean dockerBuildImage"
+            sh "docker push mrdunski/soccero-locker:0.1.0-snapshot"
         }
     }
 }
