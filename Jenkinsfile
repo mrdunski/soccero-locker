@@ -11,8 +11,8 @@ node ('java') {
     sh './gradlew clean release pushRelease'
 }
 
-node ('java') {
+node ('docker') {
     stage 'assemble'
     checkout scm
-    sh './gradlew clean dockerBuildImage dockerPushImage'
+    sh './gradlew clean dockerBuildImage'
 }
