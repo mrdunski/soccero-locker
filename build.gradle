@@ -20,6 +20,18 @@ applicationDefaultJvmArgs = ["-Xmx256m"]
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+ext {
+    dockerUsername = 'changeme'
+    dockerPassword = 'changeme'
+}
+
+docker {
+    registryCredentials {
+        username = project.ext.dockerUsername
+        password = project.ext.dockerPassword
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()

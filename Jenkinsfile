@@ -19,7 +19,7 @@ node ('docker') {
             sh "docker login -u $user -p $password"
             checkout scm
             sh 'chmod +x ./gradlew'
-            sh './gradlew clean dockerBuildImage dockerPushImage'
+            sh "./gradlew clean dockerBuildImage dockerPushImage -PdockerUsername=$user -PdockerPassword=$password"
         }
     }
 }
