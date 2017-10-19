@@ -41,6 +41,7 @@ dependencies {
 }
 
 task('generateK8sFile') {
+    mkdir('build')
     file("build/${project.name}.yaml").text = """
 apiVersion: extensions/v1beta1
 kind: Deployment
