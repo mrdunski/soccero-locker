@@ -1,7 +1,8 @@
 node ('java') {
-    stage 'test project'
-    checkout scm
-    sh './gradlew clean test'
+    stage('test project') {
+        checkout scm
+        sh './gradlew clean test'
+    }
     // junit '**/test-results/*.xml'
 }
 
@@ -12,7 +13,8 @@ node ('java') {
 //}
 
 node ('docker') {
-    stage 'assemble'
-    checkout scm
-    sh './gradlew clean dockerBuildImage'
+    stage('build docker') {
+        checkout scm
+        sh './gradlew clean dockerBuildImage'
+    }
 }
