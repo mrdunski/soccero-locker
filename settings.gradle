@@ -15,4 +15,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'kmd-slack-integration'
+rootProject.name = 'soccero-locker'

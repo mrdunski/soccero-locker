@@ -7,7 +7,7 @@ scmVersion {
     versionCreator 'versionWithBranch'
 }
 
-group 'dk.kmd'
+group 'mrdunski'
 version scmVersion.version
 
 apply plugin: 'groovy'

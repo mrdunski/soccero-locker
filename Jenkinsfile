@@ -15,8 +15,11 @@ node ('java') {
 
 node ('docker') {
     stage('build docker') {
-        checkout scm
-        sh 'chmod +x ./gradlew'
-        sh './gradlew clean dockerBuildImage'
+        withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'user', usernameVariable: 'password')]) {
+            sh "docker login -u $user -p $password"
+            checkout scm
+            sh 'chmod +x ./gradlew'
+            sh './gradlew clean dockerBuildImage'
+        }
     }
 }
