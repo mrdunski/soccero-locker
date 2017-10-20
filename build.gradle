@@ -1,14 +1,9 @@
 plugins {
-    id 'pl.allegro.tech.build.axion-release' version '1.8.1'
     id "com.bmuschko.docker-java-application" version "3.2.0"
 }
 
-scmVersion {
-    versionCreator 'versionWithBranch'
-}
-
 group 'mrdunski'
-version scmVersion.version
+version project.hasProperty('v') ? project.ext.v : 'SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
