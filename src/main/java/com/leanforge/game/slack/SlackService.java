@@ -150,6 +150,10 @@ public class SlackService {
         return slackSession.findUserById(userId).getUserName();
     }
 
+    public boolean isConnected() {
+        return slackSession.isConnected();
+    }
+
     @FunctionalInterface
     public interface MessageReactionCallback {
         void handleReaction(SlackMessage slackMessage, String userId, String reactionCode);

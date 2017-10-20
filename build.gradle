@@ -65,7 +65,15 @@ spec:
             secretKeyRef:
               name: slacksecret
               key: slackToken
-
+        livenessProbe:
+          initialDelaySeconds: 60
+          httpGet:
+            path: /health
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
 ---
 kind: Service
 apiVersion: v1
