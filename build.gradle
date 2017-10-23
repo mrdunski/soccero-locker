@@ -27,6 +27,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web:1.+'
     compile 'org.springframework.boot:spring-boot-starter-websocket:1.+'
     compile 'com.github.Ullink:simple-slack-api:0.6.0'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:+'
 
     testCompile "org.codehaus.groovy:groovy-all:2.4.10"
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
@@ -46,6 +47,11 @@ metadata:
     app: soccero-locker
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: soccero-locker

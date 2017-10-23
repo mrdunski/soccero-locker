@@ -72,4 +72,8 @@ public class QueuedGameService {
         return repository.findAllOrderedByCreationDateAsc()
                 .findFirst();
     }
+
+    public Optional<QueuedGame> find(String gameId) {
+        return repository.find(gameId);
+    }
 }

@@ -1,5 +1,6 @@
 package com.leanforge.game.lock
 
+import com.leanforge.game.event.GameEventService
 import com.leanforge.game.message.MessageBindingService
 import com.leanforge.game.pending.PendingGameMessages
 import com.leanforge.game.pending.PendingGameService
@@ -21,9 +22,10 @@ class ConsoleLockingServiceSpecification extends Specification {
     QueuedGameMessages queuedGameMessages = Mock(QueuedGameMessages)
     MessageBindingService messageBindingService = Mock(MessageBindingService)
     PendingGameMessages pendingGameMessages = Mock(PendingGameMessages)
+    GameEventService gameEventService = Mock(GameEventService)
 
     @Subject
-    ConsoleLockingService lockingService = new ConsoleLockingService(queuedGameService, queuedGameMessages, pendingGameService, pendingGameMessages, messageBindingService, slackService)
+    ConsoleLockingService lockingService = new ConsoleLockingService(queuedGameService, queuedGameMessages, pendingGameService, pendingGameMessages, messageBindingService, slackService, gameEventService)
 
     def setup() {
         pendingGameService.allPendingGames() >> [].stream()
@@ -64,6 +66,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         def message = new SlackMessage('abc', 'ch1', 'us21')
         messageBindingService.findBindingId(message) >> Optional.of('abc123')
         queuedGameService.startOldestGame() >> Optional.empty()
+        queuedGameService.find('abc123') >> Optional.of(new QueuedGame(id: 'abc123'))
 
         when:
         lockingService.endGame(message)
@@ -79,6 +82,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         def startedGame = new QueuedGame(channelId: 'ch01')
         def waitingGame = new QueuedGame(channelId: 'ch02')
         messageBindingService.findBindingId(message) >> Optional.of(startedGame.id)
+        queuedGameService.find(startedGame.id) >> Optional.of(startedGame)
 
         when:
         lockingService.endGame(message)
@@ -96,6 +100,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         given:
         def expiredGame = new QueuedGame(startDate: OffsetDateTime.now().minusMinutes(60), channelId: 'ch002')
         queuedGameService.findStartedGame() >> Optional.of(expiredGame)
+        queuedGameService.find(expiredGame.id) >> Optional.of(expiredGame)
 
         when:
         lockingService.removeOldGames()

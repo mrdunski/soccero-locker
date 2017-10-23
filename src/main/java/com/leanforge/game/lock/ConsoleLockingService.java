@@ -1,5 +1,6 @@
 package com.leanforge.game.lock;
 
+import com.leanforge.game.event.GameEventService;
 import com.leanforge.game.message.MessageBindingService;
 import com.leanforge.game.pending.PendingGame;
 import com.leanforge.game.pending.PendingGameMessages;
@@ -30,6 +31,7 @@ public class ConsoleLockingService {
     private final PendingGameMessages pendingGameMessages;
     private final MessageBindingService messageBindingService;
     private final SlackService slackService;
+    private final GameEventService gameEventService;
 
     @Autowired
     public ConsoleLockingService(QueuedGameService queuedGameService,
@@ -37,13 +39,15 @@ public class ConsoleLockingService {
                                  PendingGameService pendingGameService,
                                  PendingGameMessages pendingGameMessages,
                                  MessageBindingService messageBindingService,
-                                 SlackService slackService) {
+                                 SlackService slackService,
+                                 GameEventService gameEventService) {
         this.queuedGameService = queuedGameService;
         this.queuedGameMessages = queuedGameMessages;
         this.pendingGameService = pendingGameService;
         this.pendingGameMessages = pendingGameMessages;
         this.messageBindingService = messageBindingService;
         this.slackService = slackService;
+        this.gameEventService = gameEventService;
     }
 
     @Scheduled(fixedDelay = 1000)
@@ -140,6 +144,8 @@ public class ConsoleLockingService {
     }
 
     private void endGame(String gameId) {
+        queuedGameService.find(gameId)
+                .ifPresent(gameEventService::emmitGameFinished);
         queuedGameService.endGame(gameId);
         moveQueueUp();
     }
@@ -152,9 +158,11 @@ public class ConsoleLockingService {
 
     private void startGame(String channelId, String creatorId) {
         QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId);
+        gameEventService.emmitGameAdded(game);
         if (game.isStarted()) {
             SlackMessage statusMessage = slackService.sendChannelMessage(channelId, GO_MESSAGE, "x");
             messageBindingService.bind(statusMessage, game.getId());
+            gameEventService.emmitGameStarted(game);
         } else {
             slackService.sendChannelMessage(channelId, WAIT_MESSAGE + queueStatus());
         }
@@ -164,6 +172,7 @@ public class ConsoleLockingService {
         queuedGameService.startOldestGame().ifPresent(game -> {
             SlackMessage statusMessage = slackService.sendChannelMessage(game.getChannelId(), GO_MESSAGE, "x");
             messageBindingService.bind(statusMessage, game.getId());
+            gameEventService.emmitGameStarted(game);
         });
     }
 
