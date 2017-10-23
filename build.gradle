@@ -92,6 +92,19 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: soccero-locker
+spec:
+  rules:
+  - host: "soccero-locker.dev.kende.pl"
+    http:
+      paths:
+      - backend:
+          serviceName: soccero-locker
+          servicePort: 8080
 """
 }
 
