@@ -3,7 +3,8 @@ node ('docker') {
         checkout scm
         sh 'chmod +x ./gradlew'
         sh './gradlew clean test'
-    }
+        junit healthScaleFactor: 100.0, testResults: '**/test-results/**/*.xml'
+     }
 
     stage('build docker') {
         withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'password', usernameVariable: 'user')]) {
