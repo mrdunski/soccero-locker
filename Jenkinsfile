@@ -10,7 +10,7 @@ node ('docker') {
             sh "docker login -u $user -p $password"
             checkout scm
             sh 'chmod +x ./gradlew'
-            sh "./gradlew dockerBuildImage dockerCustomPush generateK8sFile -Pv=$BUILD_NUMBER"
+            sh "./gradlew dockerPushProjectVersion dockerPushLatest generateK8sFile -Pv=$BUILD_NUMBER"
             archiveArtifacts 'build/soccero-locker.yaml'
             stash includes: 'build/soccero-locker.yaml', name: 'soccero-locker.yaml'
         }

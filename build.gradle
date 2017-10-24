@@ -108,7 +108,17 @@ spec:
 """
 }
 
-task('dockerCustomPush', type: Exec, dependsOn: 'dockerBuildImage') {
+task('dockerTagLatest', type: Exec, dependsOn: 'dockerBuildImage') {
+    executable 'docker'
+    args 'tag', "mrdunski/soccero-locker:${project.version}", "mrdunski/soccero-locker:latest"
+}
+
+task('dockerPushLatest', type: Exec, dependsOn: 'dockerTagLatest') {
+    executable 'docker'
+    args 'push', "mrdunski/soccero-locker:${project.version}"
+}
+
+task('dockerPushProjectVersion', type: Exec, dependsOn: 'dockerBuildImage') {
     executable 'docker'
     args 'push', "mrdunski/soccero-locker:${project.version}"
 }
