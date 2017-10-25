@@ -115,7 +115,7 @@ task('dockerTagLatest', type: Exec, dependsOn: 'dockerBuildImage') {
 
 task('dockerPushLatest', type: Exec, dependsOn: 'dockerTagLatest') {
     executable 'docker'
-    args 'push', "mrdunski/soccero-locker:${project.version}"
+    args 'push', "mrdunski/soccero-locker:latest"
 }
 
 task('dockerPushProjectVersion', type: Exec, dependsOn: 'dockerBuildImage') {
