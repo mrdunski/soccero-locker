@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PendingGameMessages {
-    public static final String CREATE_FOOSBALL_GAME_COMMAND = "<@%s> could you create foosball game? Here are players: \n";
+    public static final String CREATE_FOOSBALL_GAME_COMMAND = "<@%s> could you create foosball game? Here are the players: \n";
 
     @Autowired
     SlackService slackService;

@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import static com.leanforge.game.slack.listener.SlackReactionListener.Action.ADD;
 import static com.leanforge.game.slack.listener.SlackReactionListener.Action.REMOVE;
 
-@Controller
 @SlackController
 public class ConsoleLockingController {
 
