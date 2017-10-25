@@ -13,6 +13,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 
 import java.time.OffsetDateTime
+import java.util.stream.Stream
 
 class ConsoleLockingServiceSpecification extends Specification {
 
@@ -28,13 +29,13 @@ class ConsoleLockingServiceSpecification extends Specification {
     ConsoleLockingService lockingService = new ConsoleLockingService(queuedGameService, queuedGameMessages, pendingGameService, pendingGameMessages, messageBindingService, slackService, gameEventService)
 
     def setup() {
-        pendingGameService.allPendingGames() >> [].stream()
+        pendingGameService.allPendingGames() >> { Stream.empty() }
     }
 
     def "should schedule new game and send notification if already started"() {
         given:
         def message = new SlackMessage('abc', 'ch1', 'us21')
-        queuedGameService.scheduledGames() >> [].stream()
+        queuedGameService.scheduledGames() >> { Stream.empty() }
 
         when:
         lockingService.startGame(message)
@@ -51,7 +52,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         given:
         def message = new SlackMessage('abc', 'ch1', 'us21')
         queuedGameMessages.statusMessage(_) >> ''
-        queuedGameService.scheduledGames() >> [].stream()
+        queuedGameService.scheduledGames() >> { Stream.empty() }
 
         when:
         lockingService.startGame(message)
@@ -66,7 +67,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         def message = new SlackMessage('abc', 'ch1', 'us21')
         messageBindingService.findBindingId(message) >> Optional.of('abc123')
         queuedGameService.startOldestGame() >> Optional.empty()
-        queuedGameService.find('abc123') >> Optional.of(new QueuedGame(id: 'abc123'))
+        queuedGameService.find('abc123') >> Optional.of(new QueuedGame(id: 'abc123', startDate: OffsetDateTime.now()))
 
         when:
         lockingService.endGame(message)
@@ -79,7 +80,7 @@ class ConsoleLockingServiceSpecification extends Specification {
     def "should move queue up"() {
         given:
         def message = new SlackMessage('abc', 'ch1', 'us21')
-        def startedGame = new QueuedGame(channelId: 'ch01')
+        def startedGame = new QueuedGame(channelId: 'ch01', startDate: OffsetDateTime.now())
         def waitingGame = new QueuedGame(channelId: 'ch02')
         messageBindingService.findBindingId(message) >> Optional.of(startedGame.id)
         queuedGameService.find(startedGame.id) >> Optional.of(startedGame)
@@ -125,7 +126,7 @@ class ConsoleLockingServiceSpecification extends Specification {
 
     def "should print queue status"() {
         given:
-        queuedGameService.scheduledGames() >> [new QueuedGame(channelId: 'a1'), new QueuedGame(channelId: 'a2')].stream()
+        queuedGameService.scheduledGames() >> { [new QueuedGame(channelId: 'a1'), new QueuedGame(channelId: 'a2')].stream() }
         queuedGameMessages.statusMessage(_) >> { " -${it[0].channelId}- "}
 
         when:

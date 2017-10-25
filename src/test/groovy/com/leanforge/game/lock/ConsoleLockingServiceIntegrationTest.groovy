@@ -141,6 +141,13 @@ class ConsoleLockingServiceIntegrationTest extends Specification {
                 }
             }
         }
+        slackSession.updateMessage(_, channel1, _) >> {
+            return Stub(SlackMessageHandle) {
+                getReply() >> Stub(SlackMessageReply) {
+                    getTimestamp() >> 't2'
+                }
+            }
+        }
         consoleLockingService.startGame(new SlackMessage('t1','ch1', 'user1'))
 
 

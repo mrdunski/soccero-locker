@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ import java.util.stream.Stream;
 public class ConsoleLockingService {
 
     public static final String GO_MESSAGE = "<!here|@here> go go go! (end game with :x:)";
+    public static final String GAME_FINISHED_MESSAGE = "Game finished in: ";
     public static final String WAIT_MESSAGE = ":horse: Hold your horses. Another game is in progress. Queue: \n";
 
     private final QueuedGameService queuedGameService;
@@ -55,10 +58,13 @@ public class ConsoleLockingService {
         queuedGameService.findStartedGame()
                 .filter(QueuedGame.startedBefore(30, ChronoUnit.MINUTES))
                 .ifPresent( game -> {
-                    endGame(game.getId());
-                    updatePendingGames();
-                    slackService.sendChannelMessage(game.getChannelId(), "Your game has been ended by timeout!");
+                    endGameAndMoveQueueUp(game);
+                    slackService.sendChannelMessage(game.getChannelId(), creatorNotifier(game) + " your game has been ended by timeout!");
                 });
+    }
+
+    private String creatorNotifier(QueuedGame game) {
+        return String.format("<@%s>", game.getCreatorId());
     }
 
     public void startGame(SlackMessage slackMessage) {
@@ -68,11 +74,8 @@ public class ConsoleLockingService {
 
     public void endGame(SlackMessage gamePointer) {
         messageBindingService.findBindingId(gamePointer)
-                .ifPresent(game -> {
-                    endGame(game);
-                    updatePendingGames();
-                    slackService.addReactions(gamePointer, "ok_hand");
-                });
+                .flatMap(queuedGameService::find)
+                .ifPresent(game -> endGameAndUpdateMessage(gamePointer, game));
     }
 
     public void printQueueStatus(SlackMessage slackMessage) {
@@ -143,11 +146,17 @@ public class ConsoleLockingService {
                 .forEach(this::update);
     }
 
-    private void endGame(String gameId) {
-        queuedGameService.find(gameId)
-                .ifPresent(gameEventService::emmitGameFinished);
-        queuedGameService.endGame(gameId);
+    private void endGameAndUpdateMessage(SlackMessage gamePointer, QueuedGame game) {
+        slackService.updateMessage(gamePointer, GAME_FINISHED_MESSAGE + Duration.between(game.getStartDate(), OffsetDateTime.now()));
+        slackService.addReactions(gamePointer, "ok_hand");
+        endGameAndMoveQueueUp(game);
+    }
+
+    private void endGameAndMoveQueueUp(QueuedGame game) {
+        gameEventService.emmitGameFinished(game);
+        queuedGameService.endGame(game.getId());
         moveQueueUp();
+        updatePendingGames();
     }
 
     private void startGame(PendingGame game) {
