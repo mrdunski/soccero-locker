@@ -3,6 +3,7 @@ package com.leanforge.game.pending;
 import com.leanforge.game.queue.QueuedGameService;
 import com.leanforge.game.slack.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PendingGameMessages {
+    public static final String CREATE_FOOSBALL_GAME_COMMAND = "<@%s> could you create foosball game? Here are players: \n";
 
     @Autowired
     SlackService slackService;
@@ -22,6 +24,17 @@ public class PendingGameMessages {
 
     @Autowired
     PendingGameService pendingGameService;
+
+    @Value("${foosball.user}")
+    String createFoosUserId;
+
+    public String createFoosballGameMessage(PendingGame game) {
+        return String.format(CREATE_FOOSBALL_GAME_COMMAND, createFoosUserId) + game
+                .getPlayerIds()
+                .stream()
+                .map(id -> ":joystick: <@" + id + ">")
+                .collect(Collectors.joining("\n"));
+    }
 
     public String statusMessage(PendingGame pendingGame) {
         if (pendingGame.missingPlayers() == 0) {

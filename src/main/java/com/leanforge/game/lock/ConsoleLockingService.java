@@ -82,18 +82,22 @@ public class ConsoleLockingService {
         slackService.sendChannelMessage(slackMessage.getChannelId(), "Current queue:\n" + queueStatus());
     }
 
-    public PendingGame findPlayers(SlackMessage slackMessage) {
-        return findPlayers(slackMessage, 4);
-    }
-
-    public PendingGame findPlayers(SlackMessage slackMessage, int players) {
+    public PendingGame findPlayers(SlackMessage slackMessage, int players, PendingGame.GameType gameType) {
         Stream<PendingGame> gameStream = pendingGameService.allPendingGames();
-        PendingGame pendingGame = pendingGameService.addPendingGame(slackMessage.getChannelId(), slackMessage.getSenderId(), players);
+        PendingGame pendingGame = pendingGameService.addPendingGame(slackMessage.getChannelId(), slackMessage.getSenderId(), players, gameType);
         SlackMessage pendingGameMarker = slackService.sendChannelMessage(slackMessage.getChannelId(), pendingGameMessages.statusMessage(pendingGame), "heavy_plus_sign");
         messageBindingService.bind(pendingGameMarker, pendingGame.getId());
 
         updatePendingGames(gameStream);
         return pendingGame;
+    }
+
+    public PendingGame findPlayers(SlackMessage slackMessage) {
+        return findPlayers(slackMessage, 4);
+    }
+
+    public PendingGame findPlayers(SlackMessage slackMessage, int players) {
+        return findPlayers(slackMessage, players, PendingGame.GameType.CONSOLE);
     }
 
     public void addPlayer(SlackMessage gamePointer, String userId) {
@@ -161,8 +165,25 @@ public class ConsoleLockingService {
 
     private void startGame(PendingGame game) {
         pendingGameService.delete(game.getChannelId());
-        startGame(game.getChannelId(), game.getCreatorId());
+
+        switch (game.getGameType()) {
+            case CONSOLE:
+                startConsoleGame(game);
+                break;
+            case FOOSBALL:
+                startFoosballGame(game);
+                break;
+        }
+
         update(game);
+    }
+
+    private void startConsoleGame(PendingGame game) {
+        startGame(game.getChannelId(), game.getCreatorId());
+    }
+
+    private void startFoosballGame(PendingGame game) {
+        slackService.sendChannelMessage(game.getChannelId(), pendingGameMessages.createFoosballGameMessage(game));
     }
 
     private void startGame(String channelId, String creatorId) {
@@ -198,6 +219,4 @@ public class ConsoleLockingService {
                     slackService.updateMessage(slackMessage, pendingGameMessages.statusMessage(pendingGame));
                 });
     }
-
-
 }

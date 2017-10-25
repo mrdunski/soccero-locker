@@ -26,21 +26,22 @@ public class PendingGameService {
         return pendingGameRepository.findByChannelId(channelId);
     }
 
-    public PendingGame addPendingGame(String channelId, String creatorId, int players) {
-        PendingGame game = create(channelId, creatorId, players);
+    public PendingGame addPendingGame(String channelId, String creatorId, int players, PendingGame.GameType gameType) {
+        PendingGame game = create(channelId, creatorId, players, gameType);
 
         pendingGameRepository.save(game);
 
         return game;
     }
 
-    private PendingGame create(String channelId, String creatorId, int players) {
+    private PendingGame create(String channelId, String creatorId, int players, PendingGame.GameType gameType) {
         PendingGame game = new PendingGame();
         game.setChannelId(channelId);
         game.setCreationDate(OffsetDateTime.now());
         game.setPlayerCount(players);
         game.setCreatorId(creatorId);
         game.setPlayerIds(Collections.singletonList(creatorId));
+        game.setGameType(gameType);
 
         return game;
     }

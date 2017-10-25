@@ -11,6 +11,7 @@ public class PendingGame {
     private int playerCount;
     private List<String> playerIds;
     private OffsetDateTime creationDate = OffsetDateTime.now();
+    private GameType gameType = GameType.CONSOLE;
 
     public String getId() {
         return id;
@@ -60,7 +61,19 @@ public class PendingGame {
         this.creationDate = creationDate;
     }
 
+    public GameType getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(GameType gameType) {
+        this.gameType = gameType;
+    }
+
     public int missingPlayers() {
         return playerCount - playerIds.size();
+    }
+
+    public enum GameType {
+        CONSOLE,FOOSBALL
     }
 }

@@ -19,7 +19,7 @@ class PendingGameServiceSpecification extends Specification {
         OffsetDateTime testStart = OffsetDateTime.now()
 
         when:
-        def game = pendingGameService.addPendingGame(channelId, creatorId, 4)
+        def game = pendingGameService.addPendingGame(channelId, creatorId, 4, PendingGame.GameType.CONSOLE)
 
         then:
         game.channelId == channelId

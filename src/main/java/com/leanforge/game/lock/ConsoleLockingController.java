@@ -1,5 +1,6 @@
 package com.leanforge.game.lock;
 
+import com.leanforge.game.pending.PendingGame;
 import com.leanforge.game.slack.SlackMessage;
 import com.leanforge.game.slack.listener.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,11 @@ public class ConsoleLockingController {
     @SlackMessageListener("findPlayers")
     public void findPlayers(SlackMessage message) {
         consoleLockingService.findPlayers(message);
+    }
+
+    @SlackMessageListener("findFoosballPlayers")
+    public void findFoosballPlayers(SlackMessage message) {
+        consoleLockingService.findPlayers(message, 4, PendingGame.GameType.FOOSBALL);
     }
 
     @SlackMessageListener("findPlayers ([23456789])")

@@ -2,6 +2,9 @@ management.security.enabled: false
 slack:
   token: change-me
 
+foosball:
+  user: change-me
+
 logging:
   level:
     com.leanforge: DEBUG
