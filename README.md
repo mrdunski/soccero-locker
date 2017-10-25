@@ -32,7 +32,7 @@ run command `SLACK_TOKEN="your_access_token" ./gradlew(.bat) run`
 
 `docker run -e SLACK_TOKEN=your_access_token mrdunski/soccero-locker`
 
-## (some of) Coding conventions used in project
+## (some of) Coding conventions used in project (aka Project Mantra)
 * Group functionality in package (for example classes that build game queues goes to `com.leanforge.game.queue`)
 * Use repository to map data source to domain object
 * Repository should be minimalistic - handle CRUD operations and data queries
