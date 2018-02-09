@@ -30,7 +30,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web:1.+'
     compile 'org.springframework.boot:spring-boot-starter-websocket:1.+'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:+'
-    compile 'mrdunski:spring-slack:10'
+    compile 'mrdunski:spring-slack:13'
 
     testCompile "org.codehaus.groovy:groovy-all:2.4.10"
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
