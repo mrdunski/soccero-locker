@@ -17,7 +17,7 @@ targetCompatibility = 1.8
 
 docker {
     javaApplication {
-        baseImage = 'openjdk:8-jre-slim'
+        baseImage = 'openjdk:8-jre-alpine'
         maintainer = 'Patryk Dunski "d@kende.pl"'
         ports = [8080]
     }
