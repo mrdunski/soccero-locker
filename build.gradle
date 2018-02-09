@@ -15,6 +15,13 @@ applicationDefaultJvmArgs = ["-Xmx256m"]
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+docker {
+    javaApplication {
+        baseImage = 'openjdk:8-jre-slim'
+        maintainer = 'Patryk Dunski "d@kende.pl"'
+        ports = [8080]
+    }
+}
 
 repositories {
     mavenLocal()
