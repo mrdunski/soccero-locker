@@ -22,8 +22,8 @@ node ('kubectl') {
     stage('deploy') {
         if(env.BRANCH_NAME == 'master') {
             checkout scm
-            unstash 'deployment.yaml'
-            sh 'kubectl -n leanforge apply -f build/deployment.yaml'
+            unstash 'soccero-locker.yaml'
+            sh 'kubectl -n leanforge apply -f build/soccero-locker.yaml'
         }
     }
 }
