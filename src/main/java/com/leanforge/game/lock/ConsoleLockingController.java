@@ -27,6 +27,12 @@ public class ConsoleLockingController {
         consoleLockingService.startGame(message);
     }
 
+    @SlackMessageListener("startGame p(\\d{1})")
+    public void startPriorityGame(SlackMessage message, @SlackMessageRegexGroup(1) String priorityString) {
+        int priority = Integer.parseInt(priorityString);
+        consoleLockingService.startGame(message, priority);
+    }
+
     @SlackMessageListener("queueStatus")
     public void queueStatus(SlackMessage message) {
         consoleLockingService.printQueueStatus(message);

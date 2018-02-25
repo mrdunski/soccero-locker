@@ -68,7 +68,11 @@ public class ConsoleLockingService {
     }
 
     public void startGame(SlackMessage slackMessage) {
-        startGame(slackMessage.getChannelId(), slackMessage.getSenderId());
+        startGame(slackMessage, 5);
+    }
+
+    public void startGame(SlackMessage slackMessage, int priority) {
+        startGame(slackMessage.getChannelId(), slackMessage.getSenderId(), priority);
         updatePendingGames();
     }
 
@@ -179,15 +183,15 @@ public class ConsoleLockingService {
     }
 
     private void startConsoleGame(PendingGame game) {
-        startGame(game.getChannelId(), game.getCreatorId());
+        startGame(game.getChannelId(), game.getCreatorId(), 5);
     }
 
     private void startFoosballGame(PendingGame game) {
         slackService.sendChannelMessage(game.getChannelId(), pendingGameMessages.createFoosballGameMessage(game));
     }
 
-    private void startGame(String channelId, String creatorId) {
-        QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId);
+    private void startGame(String channelId, String creatorId, int priority) {
+        QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId, priority);
         gameEventService.emmitGameAdded(game);
         if (game.isStarted()) {
             SlackMessage statusMessage = slackService.sendChannelMessage(channelId, GO_MESSAGE, "x");
@@ -199,7 +203,7 @@ public class ConsoleLockingService {
     }
 
     private void moveQueueUp() {
-        queuedGameService.startOldestGame().ifPresent(game -> {
+        queuedGameService.startTopGame().ifPresent(game -> {
             SlackMessage statusMessage = slackService.sendChannelMessage(game.getChannelId(), GO_MESSAGE, "x");
             messageBindingService.bind(statusMessage, game.getId());
             gameEventService.emmitGameStarted(game);

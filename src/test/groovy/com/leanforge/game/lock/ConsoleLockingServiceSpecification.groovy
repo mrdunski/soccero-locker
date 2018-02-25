@@ -41,7 +41,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         lockingService.startGame(message)
 
         then:
-        1 * queuedGameService.scheduleGame('ch1', 'us21') >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: OffsetDateTime.now(), id: 'abc123')
+        1 * queuedGameService.scheduleGame('ch1', 'us21', 5) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: OffsetDateTime.now(), id: 'abc123')
         1 * slackService.sendChannelMessage('ch1', ConsoleLockingService.GO_MESSAGE, 'x') >> new SlackMessage('bcd', 'ch1', 'test')
         1 * messageBindingService.bind(_, 'abc123') >> {
             assert it[0].timestamp == 'bcd'
@@ -58,7 +58,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         lockingService.startGame(message)
 
         then:
-        1 * queuedGameService.scheduleGame('ch1', 'us21') >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: null, id: 'abc123')
+        1 * queuedGameService.scheduleGame('ch1', 'us21', 5) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: null, id: 'abc123')
         1 * slackService.sendChannelMessage('ch1', ConsoleLockingService.WAIT_MESSAGE + '> ') >> new SlackMessage('bcd', 'ch1', 'test')
     }
 
@@ -66,7 +66,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         given:
         def message = new SlackMessage('abc', 'ch1', 'us21')
         messageBindingService.findBindingId(message) >> Optional.of('abc123')
-        queuedGameService.startOldestGame() >> Optional.empty()
+        queuedGameService.startTopGame() >> Optional.empty()
         queuedGameService.find('abc123') >> Optional.of(new QueuedGame(id: 'abc123', startDate: OffsetDateTime.now()))
 
         when:
@@ -89,7 +89,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         lockingService.endGame(message)
 
         then:
-        1 * queuedGameService.startOldestGame() >> {
+        1 * queuedGameService.startTopGame() >> {
             waitingGame.startDate = OffsetDateTime.now()
             Optional.of(waitingGame)
         }
@@ -108,7 +108,7 @@ class ConsoleLockingServiceSpecification extends Specification {
 
         then:
         1 * queuedGameService.endGame(expiredGame.id)
-        1 * queuedGameService.startOldestGame() >> Optional.empty()
+        1 * queuedGameService.startTopGame() >> Optional.empty()
         1 * slackService.sendChannelMessage('ch002', _)
     }
 

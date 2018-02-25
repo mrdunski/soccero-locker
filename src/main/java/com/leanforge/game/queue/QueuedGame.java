@@ -18,10 +18,9 @@ public class QueuedGame {
     private String id = UUID.randomUUID().toString();
     private String creatorId;
     private String channelId;
-
-    @Field()
     private OffsetDateTime creationDate;
     private OffsetDateTime startDate;
+    private int priority = 5;
 
     public String getId() {
         return id;
@@ -61,6 +60,14 @@ public class QueuedGame {
 
     public void setChannelId(String channelId) {
         this.channelId = channelId;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public boolean isStarted() {

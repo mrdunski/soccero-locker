@@ -29,6 +29,7 @@ class PendingGameServiceSpecification extends Specification {
         game.playerCount == 4
         game.playerIds.contains(creatorId)
         game.playerIds.size() == 1
+        1 * repository.deleteByChannelId(channelId)
         1 * repository.save(_)
     }
 

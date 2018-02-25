@@ -18,11 +18,12 @@ public class QueuedGameService {
         this.repository = repository;
     }
 
-    public QueuedGame scheduleGame(String channelId, String creatorId) {
+    public QueuedGame scheduleGame(String channelId, String creatorId, int priority) {
         QueuedGame game = new QueuedGame();
         game.setCreatorId(creatorId);
         game.setCreationDate(OffsetDateTime.now());
         game.setChannelId(channelId);
+        game.setPriority(priority);
 
         if (!findStartedGame().isPresent()) {
             game.setStartDate(OffsetDateTime.now());
@@ -41,8 +42,8 @@ public class QueuedGameService {
         repository.delete(id);
     }
 
-    public synchronized Optional<QueuedGame> startOldestGame() {
-        return findOldestGame()
+    public synchronized Optional<QueuedGame> startTopGame() {
+        return findTopPriorityGame()
                 .flatMap(this::startGame);
     }
 
@@ -64,13 +65,21 @@ public class QueuedGameService {
     public Optional<QueuedGame> findStartedGame() {
         return repository.findAllByOrderByCreationDateAsc()
                 .filter(it -> it.getStartDate() != null)
-                .sorted(Comparator.comparing(QueuedGame::getStartDate))
-                .findFirst();
+                .min(Comparator.comparing(QueuedGame::getStartDate));
     }
 
     public Optional<QueuedGame> findOldestGame() {
         return repository.findAllByOrderByCreationDateAsc()
                 .findFirst();
+    }
+
+    private Optional<QueuedGame> findTopPriorityGame() {
+        return repository.findAllByOrderByCreationDateAsc()
+                .filter(it -> it.getStartDate() == null)
+                .min(
+                        Comparator.comparing(QueuedGame::getPriority)
+                                .thenComparing(QueuedGame::getCreationDate)
+                );
     }
 
     public Optional<QueuedGame> find(String gameId) {

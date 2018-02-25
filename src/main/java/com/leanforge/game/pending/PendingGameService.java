@@ -27,8 +27,9 @@ public class PendingGameService {
     }
 
     public PendingGame addPendingGame(String channelId, String creatorId, int players, PendingGame.GameType gameType) {
-        PendingGame game = create(channelId, creatorId, players, gameType);
 
+        pendingGameRepository.deleteByChannelId(channelId);
+        PendingGame game = create(channelId, creatorId, players, gameType);
         pendingGameRepository.save(game);
 
         return game;

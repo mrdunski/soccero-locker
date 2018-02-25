@@ -26,7 +26,7 @@ public class QueuedGameMessages {
             return String.format(":video_game: %s (added by %s at %s), started at %s", channel, name, addedOn, startedOn);
         }
 
-        return String.format(":video_game: %s (added by %s at %s)", channel, name, addedOn);
+        return String.format(":video_game: %s (added by %s at %s) p%s", channel, name, addedOn, game.getPriority());
     }
 
 }
