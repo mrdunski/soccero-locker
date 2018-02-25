@@ -34,7 +34,7 @@ public class QueuedGameService {
     }
 
     public Stream<QueuedGame> scheduledGames() {
-        return repository.findAllOrderedByCreationDateAsc();
+        return repository.findAllByOrderByCreationDateAsc();
     }
 
     public synchronized void endGame(String id) {
@@ -47,7 +47,7 @@ public class QueuedGameService {
     }
 
     public synchronized Optional<QueuedGame> startGame(String id) {
-        return repository.find(id)
+        return Optional.ofNullable(repository.findOne(id))
                 .flatMap(this::startGame);
     }
 
@@ -62,18 +62,18 @@ public class QueuedGameService {
     }
 
     public Optional<QueuedGame> findStartedGame() {
-        return repository.findAllOrderedByCreationDateAsc()
+        return repository.findAllByOrderByCreationDateAsc()
                 .filter(it -> it.getStartDate() != null)
                 .sorted(Comparator.comparing(QueuedGame::getStartDate))
                 .findFirst();
     }
 
     public Optional<QueuedGame> findOldestGame() {
-        return repository.findAllOrderedByCreationDateAsc()
+        return repository.findAllByOrderByCreationDateAsc()
                 .findFirst();
     }
 
     public Optional<QueuedGame> find(String gameId) {
-        return repository.find(gameId);
+        return Optional.of(repository.findOne(gameId));
     }
 }

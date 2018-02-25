@@ -14,7 +14,7 @@ class QueuedGameServiceSpecification extends Specification {
 
     def "should create new started game if queue is empty"() {
         given:
-        repository.findAllOrderedByCreationDateAsc() >> [].stream()
+        repository.findAllByOrderByCreationDateAsc() >> [].stream()
 
         when:
         def game = queuedGameService.scheduleGame('ch1', 'u1')
@@ -29,7 +29,7 @@ class QueuedGameServiceSpecification extends Specification {
 
     def "should create new scheduled game if queue is not empty"() {
         given:
-        repository.findAllOrderedByCreationDateAsc() >> [new QueuedGame(startDate: OffsetDateTime.now())].stream()
+        repository.findAllByOrderByCreationDateAsc() >> [new QueuedGame(startDate: OffsetDateTime.now())].stream()
 
         when:
         def game = queuedGameService.scheduleGame('ch1', 'u1')
@@ -53,11 +53,11 @@ class QueuedGameServiceSpecification extends Specification {
     def "should start game if no game in progress"() {
         given:
         def stoppedGame = new QueuedGame(id: 'abc123', startDate: null)
-        repository.findAllOrderedByCreationDateAsc() >> [
+        repository.findAllByOrderByCreationDateAsc() >> [
                 new QueuedGame(startDate: null),
                 stoppedGame
         ].stream()
-        repository.find('abc123') >> Optional.of(stoppedGame)
+        repository.findOne('abc123') >> stoppedGame
 
         when:
         def startedGame = queuedGameService.startGame('abc123')
@@ -74,11 +74,11 @@ class QueuedGameServiceSpecification extends Specification {
     def "should not start game if another game is in progress"() {
         given:
         def stoppedGame = new QueuedGame(id: 'abc123', startDate: null)
-        repository.findAllOrderedByCreationDateAsc() >> [
+        repository.findAllByOrderByCreationDateAsc() >> [
                 new QueuedGame(startDate: OffsetDateTime.now().minusMinutes(5)),
                 stoppedGame
         ].stream()
-        repository.find('abc123') >> Optional.of(stoppedGame)
+        repository.findOne('abc123') >> stoppedGame
 
         when:
         def startedGame = queuedGameService.startGame('abc123')

@@ -1,9 +1,11 @@
 package com.leanforge.game.message;
 
 import com.leanforge.game.slack.SlackMessage;
+import org.springframework.data.annotation.Id;
 
 public class MessageBinding {
 
+    @Id
     private String messageUuid;
     private String bindId;
     private String slackMessageTimestamp;

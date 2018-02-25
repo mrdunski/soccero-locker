@@ -1,10 +1,13 @@
 package com.leanforge.game.pending;
 
+import org.springframework.data.annotation.Id;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public class PendingGame {
+    @Id
     private String id = UUID.randomUUID().toString();
     private String channelId;
     private String creatorId;

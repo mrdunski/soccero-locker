@@ -1,7 +1,7 @@
 package com.leanforge.game.lock
 
 import com.leanforge.game.TestApplication
-import com.leanforge.game.pending.PendingGameRepository
+import com.leanforge.game.pending.MemoryPendingGameRepository
 import com.leanforge.game.queue.QueuedGameRepository
 import com.leanforge.game.slack.SlackMessage
 import com.ullink.slack.simpleslackapi.SlackChannel
@@ -27,7 +27,7 @@ class ConsoleLockingServiceIntegrationTest extends Specification {
     QueuedGameRepository queuedGameRepository
 
     @Autowired
-    PendingGameRepository pendingGameRepository
+    MemoryPendingGameRepository pendingGameRepository
 
     @Autowired
     SlackSession slackSession
@@ -56,10 +56,12 @@ class ConsoleLockingServiceIntegrationTest extends Specification {
     }
 
     def cleanup() {
-        queuedGameRepository.findAllOrderedByCreationDateAsc()
+        queuedGameRepository.findAllByOrderByCreationDateAsc()
             .forEach({queuedGameRepository.delete(it.id)})
-        pendingGameRepository.findAll()
-            .forEach({pendingGameRepository.delete(it.channelId)})
+        pendingGameRepository.findAllByOrderByCreationDateAsc()
+            .forEach({
+            pendingGameRepository.deleteByChannelId(it.channelId)
+        })
     }
 
     def "should add games to queue"() {
@@ -122,7 +124,7 @@ class ConsoleLockingServiceIntegrationTest extends Specification {
             }
         }
         1 * slackSession.addReactionToMessage(channel2, 't1', 'x')
-        queuedGameRepository.findAllOrderedByCreationDateAsc().count() == 2
+        queuedGameRepository.findAllByOrderByCreationDateAsc().count() == 2
 
     }
 
@@ -156,7 +158,7 @@ class ConsoleLockingServiceIntegrationTest extends Specification {
         consoleLockingService.endGame(new SlackMessage('t2', 'ch1', 'u1'))
 
         then:
-        queuedGameRepository.findAllOrderedByCreationDateAsc().count() == 0
+        queuedGameRepository.findAllByOrderByCreationDateAsc().count() == 0
     }
 
     def "should look for new players"() {

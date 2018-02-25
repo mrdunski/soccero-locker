@@ -36,8 +36,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator:1.+'
     compile 'org.springframework.boot:spring-boot-starter-web:1.+'
     compile 'org.springframework.boot:spring-boot-starter-websocket:1.+'
+    compile 'org.springframework.boot:spring-boot-starter-data-mongodb:1.+'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:+'
-    compile 'mrdunski:spring-slack:13'
+    compile 'mrdunski:spring-slack:23'
 
     testCompile "org.codehaus.groovy:groovy-all:2.4.10"
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
@@ -79,7 +80,7 @@ spec:
         - name: SLACK_TOKEN
           valueFrom:
             secretKeyRef:
-              name: slacksecret
+              name: locker
               key: slackToken
         - name: FOOSBALL_USER
           value: U72NDDQP7

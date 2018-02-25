@@ -8,3 +8,6 @@ foosball:
 logging:
   level:
     com.leanforge: DEBUG
+
+spring.data.mongodb:
+  uri: mongodb://mongodb:27017/locker

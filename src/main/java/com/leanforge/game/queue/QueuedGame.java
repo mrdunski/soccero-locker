@@ -1,5 +1,8 @@
 package com.leanforge.game.queue;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -11,9 +14,12 @@ public class QueuedGame {
         return game -> game.getStartDate() != null && game.getStartDate().isBefore(OffsetDateTime.now().minus(time, unit));
     }
 
+    @Id
     private String id = UUID.randomUUID().toString();
     private String creatorId;
     private String channelId;
+
+    @Field()
     private OffsetDateTime creationDate;
     private OffsetDateTime startDate;
 

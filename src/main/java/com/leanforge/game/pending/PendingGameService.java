@@ -19,11 +19,11 @@ public class PendingGameService {
     }
 
     public Optional<PendingGame> find(String id) {
-        return pendingGameRepository.find(id);
+        return Optional.ofNullable(pendingGameRepository.findOne(id));
     }
 
     public Optional<PendingGame> findByChannelId(String channelId) {
-        return pendingGameRepository.findByChannelId(channelId);
+        return Optional.ofNullable(pendingGameRepository.findByChannelId(channelId));
     }
 
     public PendingGame addPendingGame(String channelId, String creatorId, int players, PendingGame.GameType gameType) {
@@ -47,7 +47,7 @@ public class PendingGameService {
     }
 
     public Stream<PendingGame> allPendingGames() {
-        return pendingGameRepository.findAll();
+        return pendingGameRepository.findAllByOrderByCreationDateAsc();
     }
 
     public synchronized void addPlayers(PendingGame pendingGame, String... playerIds) {
@@ -76,6 +76,6 @@ public class PendingGameService {
     }
 
     public void delete(String channelId) {
-        pendingGameRepository.delete(channelId);
+        pendingGameRepository.deleteByChannelId(channelId);
     }
 }
