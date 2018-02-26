@@ -27,10 +27,10 @@ public class ConsoleLockingController {
         consoleLockingService.startGame(message);
     }
 
-    @SlackMessageListener("startGame p(\\d{1})")
-    public void startPriorityGame(SlackMessage message, @SlackMessageRegexGroup(1) String priorityString) {
+    @SlackMessageListener("startGame p(\\d{1}) `(.*)`")
+    public void startPriorityGame(SlackMessage message, @SlackMessageRegexGroup(1) String priorityString, @SlackMessageRegexGroup(2) String comment) {
         int priority = Integer.parseInt(priorityString);
-        consoleLockingService.startGame(message, priority);
+        consoleLockingService.startGame(message, priority, comment);
     }
 
     @SlackMessageListener("queueStatus")

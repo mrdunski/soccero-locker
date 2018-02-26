@@ -2,6 +2,7 @@ package com.leanforge.game.lock
 
 import com.leanforge.game.TestApplication
 import com.leanforge.game.pending.MemoryPendingGameRepository
+import com.leanforge.game.queue.QueuedGame
 import com.leanforge.game.queue.QueuedGameRepository
 import com.leanforge.game.slack.SlackMessage
 import com.ullink.slack.simpleslackapi.SlackChannel
@@ -19,6 +20,9 @@ import java.time.ZoneId
 @SpringBootTest(classes = TestApplication)
 @Configuration
 class ConsoleLockingServiceIntegrationTest extends Specification {
+
+    private static final String defaultMessage = "<!here|@here> go go go! (end game with :x:)";
+
 
     @Autowired
     ConsoleLockingService consoleLockingService
@@ -106,7 +110,7 @@ class ConsoleLockingServiceIntegrationTest extends Specification {
             }
         }
         1 * slackSession.sendMessage(channel2, _) >> {
-            assert it[1].contains(ConsoleLockingService.GO_MESSAGE)
+            assert it[1].contains(defaultMessage)
 
             return Stub(SlackMessageHandle) {
                 getReply() >> Stub(SlackMessageReply) {

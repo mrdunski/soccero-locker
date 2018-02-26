@@ -13,10 +13,12 @@ import com.leanforge.game.slack.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,7 +26,8 @@ import java.util.stream.Stream;
 @Service
 public class ConsoleLockingService {
 
-    public static final String GO_MESSAGE = "<!here|@here> go go go! (end game with :x:)";
+    private static final String GO_MESSAGE_TEMPLATE = "%s go go go! (end game with :x:)%s";
+    private static final String HERE = "<!here|@here>";
     public static final String GAME_FINISHED_MESSAGE = "Game finished in: ";
     public static final String WAIT_MESSAGE = ":horse: Hold your horses. Another game is in progress. Queue: \n";
 
@@ -68,11 +71,11 @@ public class ConsoleLockingService {
     }
 
     public void startGame(SlackMessage slackMessage) {
-        startGame(slackMessage, 5);
+        startGame(slackMessage, 5, null);
     }
 
-    public void startGame(SlackMessage slackMessage, int priority) {
-        startGame(slackMessage.getChannelId(), slackMessage.getSenderId(), priority);
+    public void startGame(SlackMessage slackMessage, int priority, String comment) {
+        startGame(slackMessage.getChannelId(), slackMessage.getSenderId(), priority, Collections.emptyList(), comment);
         updatePendingGames();
     }
 
@@ -183,18 +186,18 @@ public class ConsoleLockingService {
     }
 
     private void startConsoleGame(PendingGame game) {
-        startGame(game.getChannelId(), game.getCreatorId(), 5);
+        startGame(game.getChannelId(), game.getCreatorId(), 5, game.getPlayerIds(), null);
     }
 
     private void startFoosballGame(PendingGame game) {
         slackService.sendChannelMessage(game.getChannelId(), pendingGameMessages.createFoosballGameMessage(game));
     }
 
-    private void startGame(String channelId, String creatorId, int priority) {
-        QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId, priority);
+    private void startGame(String channelId, String creatorId, int priority, List<String> players, String comments) {
+        QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId, priority, players, comments);
         gameEventService.emmitGameAdded(game);
         if (game.isStarted()) {
-            SlackMessage statusMessage = slackService.sendChannelMessage(channelId, GO_MESSAGE, "x");
+            SlackMessage statusMessage = slackService.sendChannelMessage(channelId, goGameMessage(game), "x");
             messageBindingService.bind(statusMessage, game.getId());
             gameEventService.emmitGameStarted(game);
         } else {
@@ -204,7 +207,7 @@ public class ConsoleLockingService {
 
     private void moveQueueUp() {
         queuedGameService.startTopGame().ifPresent(game -> {
-            SlackMessage statusMessage = slackService.sendChannelMessage(game.getChannelId(), GO_MESSAGE, "x");
+            SlackMessage statusMessage = slackService.sendChannelMessage(game.getChannelId(), goGameMessage(game), "x");
             messageBindingService.bind(statusMessage, game.getId());
             gameEventService.emmitGameStarted(game);
         });
@@ -222,5 +225,19 @@ public class ConsoleLockingService {
                 .ifPresent(slackMessage -> {
                     slackService.updateMessage(slackMessage, pendingGameMessages.statusMessage(pendingGame));
                 });
+    }
+
+    String goGameMessage(QueuedGame queuedGame) {
+        String keywords = HERE;
+        if (!queuedGame.getPlayers().isEmpty()) {
+            keywords = queuedGame.getPlayers().stream().map(it -> "<@" + it + ">").collect(Collectors.joining(" "));
+        }
+
+        String comment = "";
+
+        if (queuedGame.getComment() != null) {
+            comment = " - `" + queuedGame.getComment() + "`";
+        }
+        return String.format(GO_MESSAGE_TEMPLATE, keywords, comment);
     }
 }

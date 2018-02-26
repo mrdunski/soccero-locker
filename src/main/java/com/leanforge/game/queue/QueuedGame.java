@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -21,6 +23,8 @@ public class QueuedGame {
     private OffsetDateTime creationDate;
     private OffsetDateTime startDate;
     private int priority = 5;
+    private List<String> players = new ArrayList<>();
+    private String comment;
 
     public String getId() {
         return id;
@@ -72,5 +76,21 @@ public class QueuedGame {
 
     public boolean isStarted() {
         return startDate != null;
+    }
+
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<String> players) {
+        this.players = players;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

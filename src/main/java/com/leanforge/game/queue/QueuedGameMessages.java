@@ -19,14 +19,24 @@ public class QueuedGameMessages {
 
         String name = slackService.getRealNameById(game.getCreatorId());
         String channel = slackService.getChannelName(game.getChannelId());
+        if (channel == null) {
+            channel = "{none}";
+        }
         String addedOn = DateTimeFormatter.ISO_TIME.format(OffsetDateTime.from(game.getCreationDate()).atZoneSameInstant(userTimezone));
 
         if (game.getStartDate() != null) {
             String startedOn = DateTimeFormatter.ISO_TIME.format(OffsetDateTime.from(game.getStartDate()).atZoneSameInstant(userTimezone));
-            return String.format(":video_game: %s (added by %s at %s), started at %s", channel, name, addedOn, startedOn);
+            return String.format(":video_game: %s (added by %s at %s), started at %s _(p%s)_%s", channel, name, addedOn, startedOn, game.getPriority(),  commentPart(game));
         }
 
-        return String.format(":video_game: %s (added by %s at %s) p%s", channel, name, addedOn, game.getPriority());
+        return String.format(":video_game: %s (added by %s at %s) _(p%s)_%s", channel, name, addedOn, game.getPriority(), commentPart(game));
     }
 
+    private String commentPart(QueuedGame game) {
+        if (game.getComment() == null || game.getComment().isEmpty()) {
+            return "";
+        }
+
+        return " - `" + game.getComment() + "`";
+    }
 }

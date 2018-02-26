@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -18,12 +19,14 @@ public class QueuedGameService {
         this.repository = repository;
     }
 
-    public QueuedGame scheduleGame(String channelId, String creatorId, int priority) {
+    public QueuedGame scheduleGame(String channelId, String creatorId, int priority, List<String> players, String comment) {
         QueuedGame game = new QueuedGame();
         game.setCreatorId(creatorId);
         game.setCreationDate(OffsetDateTime.now());
         game.setChannelId(channelId);
         game.setPriority(priority);
+        game.setComment(comment);
+        game.setPlayers(players);
 
         if (!findStartedGame().isPresent()) {
             game.setStartDate(OffsetDateTime.now());
