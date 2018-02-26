@@ -86,6 +86,6 @@ public class QueuedGameService {
     }
 
     public Optional<QueuedGame> find(String gameId) {
-        return Optional.of(repository.findOne(gameId));
+        return Optional.ofNullable(repository.findOne(gameId));
     }
 }
