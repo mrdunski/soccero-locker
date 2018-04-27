@@ -30,6 +30,8 @@ public class HelpController {
                 ":pushpin: (:x:) on `go go go` message - end the game and informs players in queue.\n" +
                 ":pushpin: (:heavy_plus_sign:) on pending game message - add/remove yourself to the game.\n" +
                 ":pushpin: `+ @player1 @player2 ...` - add somebody to pending game \n" +
-                ":pushpin: `- @player1 @player2 ...` - remove somebody";
+                ":pushpin: `- @player1 @player2 ...` - remove somebody\n" +
+                ":pushpin: (:fast_forward:) on pending game message - force start pending game\n" +
+                ":pushpin: `forceStart` on pending game message thread - force start pending game";
     }
 }

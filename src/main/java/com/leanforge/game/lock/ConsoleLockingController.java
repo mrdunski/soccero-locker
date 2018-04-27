@@ -54,7 +54,12 @@ public class ConsoleLockingController {
     }
 
     @SlackReactionListener(value = "fast_forward", action = ADD)
-    public void forceStart(SlackMessage message) {
+    public void forceStartReaction(SlackMessage message) {
+        consoleLockingService.forceStartPendingGame(message);
+    }
+
+    @SlackThreadMessageListener(value = "forceStart")
+    public void forceStartMessage(SlackMessage message) {
         consoleLockingService.forceStartPendingGame(message);
     }
 
