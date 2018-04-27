@@ -79,6 +79,17 @@ public class ConsoleLockingService {
         updatePendingGames();
     }
 
+    public void forceStartPendingGame(SlackMessage gamePointer) {
+        messageBindingService.findBindingId(gamePointer)
+                .flatMap(pendingGameService::find)
+                .ifPresent(pendingGame -> {
+                    pendingGameService.closePendingGameWithExistingPlayers(pendingGame);
+                    startGame(pendingGame);
+                });
+
+        updatePendingGames();
+    }
+
     public void endGame(SlackMessage gamePointer) {
         messageBindingService.findBindingId(gamePointer)
                 .flatMap(queuedGameService::find)

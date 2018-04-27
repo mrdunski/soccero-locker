@@ -79,4 +79,9 @@ public class PendingGameService {
     public void delete(String channelId) {
         pendingGameRepository.deleteByChannelId(channelId);
     }
+
+    public synchronized void closePendingGameWithExistingPlayers(PendingGame pendingGame) {
+        pendingGame.setPlayerCount(pendingGame.getPlayerIds().size());
+        pendingGameRepository.save(pendingGame);
+    }
 }

@@ -53,6 +53,11 @@ public class ConsoleLockingController {
         consoleLockingService.removePlayer(message, userId);
     }
 
+    @SlackReactionListener(value = "fast_forward", action = ADD)
+    public void forceStart(SlackMessage message) {
+        consoleLockingService.forceStartPendingGame(message);
+    }
+
     @SlackMessageListener("findPlayers")
     public void findPlayers(SlackMessage message) {
         consoleLockingService.findPlayers(message);
