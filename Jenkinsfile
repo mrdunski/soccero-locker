@@ -17,13 +17,3 @@ node ('docker') {
         }
     }
 }
-
-node ('kubectl') {
-    stage('deploy') {
-        if(env.BRANCH_NAME == 'master') {
-            checkout scm
-            unstash 'soccero-locker.yaml'
-            sh 'kubectl -n leanforge apply -f build/soccero-locker.yaml'
-        }
-    }
-}

@@ -118,6 +118,19 @@ spec:
       - backend:
           serviceName: soccero-locker
           servicePort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: soccero-locker-lf
+spec:
+  rules:
+  - host: "soccero-locker.playroom.leanforge.pl"
+    http:
+      paths:
+      - backend:
+          serviceName: soccero-locker
+          servicePort: 8080
 """
 }
 
