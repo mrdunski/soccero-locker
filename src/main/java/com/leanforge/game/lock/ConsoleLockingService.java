@@ -103,7 +103,7 @@ public class ConsoleLockingService {
     public PendingGame findPlayers(SlackMessage slackMessage, int players, PendingGame.GameType gameType) {
         Stream<PendingGame> gameStream = pendingGameService.allPendingGames();
         PendingGame pendingGame = pendingGameService.addPendingGame(slackMessage.getChannelId(), slackMessage.getSenderId(), players, gameType);
-        SlackMessage pendingGameMarker = slackService.sendChannelMessage(slackMessage.getChannelId(), pendingGameMessages.statusMessage(pendingGame), "heavy_plus_sign");
+        SlackMessage pendingGameMarker = slackService.sendChannelMessage(slackMessage.getChannelId(), pendingGameMessages.statusMessage(pendingGame), "heavy_plus_sign", "fast_forward");
         messageBindingService.bind(pendingGameMarker, pendingGame.getId());
 
         updatePendingGames(gameStream);
