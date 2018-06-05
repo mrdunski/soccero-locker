@@ -33,10 +33,10 @@ repositories {
 }
 
 dependencies {
-    compile 'org.springframework.boot:spring-boot-starter-actuator:1.+'
-    compile 'org.springframework.boot:spring-boot-starter-web:1.+'
-    compile 'org.springframework.boot:spring-boot-starter-websocket:1.+'
-    compile 'org.springframework.boot:spring-boot-starter-data-mongodb:1.+'
+    compile 'org.springframework.boot:spring-boot-starter-actuator:1.5.11.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.5.11.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-websocket:1.5.11.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-mongodb:1.5.11.RELEASE'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:+'
     compile 'mrdunski:spring-slack:30'
 
