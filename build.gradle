@@ -84,6 +84,8 @@ spec:
               key: slackToken
         - name: FOOSBALL_USER
           value: U72NDDQP7
+        - name: _JAVA_OPTIONS
+          value: -Xmx128m -Xms64m
         livenessProbe:
           initialDelaySeconds: 60
           httpGet:
