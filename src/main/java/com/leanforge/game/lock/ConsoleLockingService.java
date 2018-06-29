@@ -13,13 +13,11 @@ import com.leanforge.game.slack.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -147,7 +145,17 @@ public class ConsoleLockingService {
             startGame(pendingGame);
         }
 
+        removePlayerFromAllGames(pendingGame.getPlayerIds());
+
         updatePendingGames();
+    }
+
+    private void removePlayerFromAllGames(Collection<String> playerIds) {
+        Set<String> playerSet = new HashSet<>(playerIds);
+        String[] playerArray = playerIds.toArray(new String[playerIds.size()]);
+        pendingGameService.allPendingGames()
+                .filter(it -> it.getPlayerIds().stream().anyMatch(playerSet::contains))
+                .forEach(it -> pendingGameService.removePlayers(it, playerArray));
     }
 
     public void removePlayers(SlackMessage slackMessage, List<String> playerIds) {
