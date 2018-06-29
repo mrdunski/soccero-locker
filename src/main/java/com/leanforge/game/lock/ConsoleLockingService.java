@@ -143,9 +143,9 @@ public class ConsoleLockingService {
         pendingGameService.addPlayers(pendingGame, playerIds.toArray(new String[0]));
         if (pendingGame.missingPlayers() == 0) {
             startGame(pendingGame);
+            removePlayerFromAllGames(pendingGame.getPlayerIds());
         }
 
-        removePlayerFromAllGames(pendingGame.getPlayerIds());
 
         updatePendingGames();
     }
