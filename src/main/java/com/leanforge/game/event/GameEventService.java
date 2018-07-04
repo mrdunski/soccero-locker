@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Service
 public class GameEventService {
@@ -40,21 +42,27 @@ public class GameEventService {
     }
 
     public void emmitGameFinished(QueuedGame game) {
-        emmit(new GameFinishedEvent(toGameType(game.getChannelId()), game.getId()));
+        emmit(new GameFinishedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers())));
     }
 
     public void emmitGameStarted(QueuedGame game) {
-        emmit(new GameStartedEvent(toGameType(game.getChannelId()), game.getId()));
+        emmit(new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers())));
     }
 
     public void emmitGameAdded(QueuedGame game) {
-        emmit(new GameAddedEvent(toGameType(game.getChannelId()), game.getId()));
+        emmit(new GameAddedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers())));
     }
 
     public String toGameType(String slackChannelId) {
         return slackService.getChannelName(slackChannelId);
     }
 
+
+    private List<String> slackIdsToNames(List<String> ids) {
+        return ids.stream()
+                .map(slackService::getRealNameById)
+                .collect(Collectors.toList());
+    }
 
     public class GameEventObserver {
         private Consumer<GameEvent> eventHandler = it -> {};

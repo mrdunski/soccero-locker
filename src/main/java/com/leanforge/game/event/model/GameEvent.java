@@ -1,7 +1,7 @@
 package com.leanforge.game.event.model;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public abstract class GameEvent {
@@ -9,6 +9,7 @@ public abstract class GameEvent {
     private String gameType;
     private String gameId;
     private String eventType;
+    private List<String> players;
     private OffsetDateTime timestamp = OffsetDateTime.now();
 
     public String getGameId() {
@@ -49,5 +50,13 @@ public abstract class GameEvent {
 
     public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public List<String> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<String> players) {
+        this.players = players;
     }
 }
