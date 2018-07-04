@@ -46,17 +46,24 @@ public class GameEventService {
     }
 
     public void emmitGameStarted(QueuedGame game) {
-        emmit(new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers())));
+        emmit(createGameStartedEvent(game));
     }
 
     public void emmitGameAdded(QueuedGame game) {
-        emmit(new GameAddedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers())));
+        emmit(createGameAddedEvent(game));
     }
 
     public String toGameType(String slackChannelId) {
         return slackService.getChannelName(slackChannelId);
     }
 
+    public GameEvent createGameStartedEvent(QueuedGame game) {
+        return new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()));
+    }
+
+    public GameEvent createGameAddedEvent(QueuedGame game) {
+        return new GameAddedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()));
+    }
 
     private List<String> slackIdsToNames(List<String> ids) {
         return ids.stream()
