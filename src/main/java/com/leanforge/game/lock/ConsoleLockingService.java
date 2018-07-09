@@ -204,6 +204,7 @@ public class ConsoleLockingService {
         }
 
         update(game);
+        removePlayerFromAllGames(game.getPlayerIds());
     }
 
     private void startConsoleGame(PendingGame game) {
