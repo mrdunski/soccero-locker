@@ -83,6 +83,7 @@ public class ConsoleLockingService {
                 .ifPresent(pendingGame -> {
                     pendingGameService.closePendingGameWithExistingPlayers(pendingGame);
                     startGame(pendingGame);
+                    removePlayerFromAllGames(pendingGame.getPlayerIds());
                 });
 
         updatePendingGames();
@@ -123,6 +124,7 @@ public class ConsoleLockingService {
                     pendingGameService.addPlayers(pendingGame, userId);
                     if (pendingGame.missingPlayers() == 0) {
                         startGame(pendingGame);
+                        removePlayerFromAllGames(pendingGame.getPlayerIds());
                     }
                 });
 
