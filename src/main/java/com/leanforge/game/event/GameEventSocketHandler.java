@@ -5,12 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leanforge.game.event.model.Command;
 import com.leanforge.game.queue.QueuedGameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 @Controller
 public class GameEventSocketHandler extends TextWebSocketHandler {
@@ -24,8 +29,11 @@ public class GameEventSocketHandler extends TextWebSocketHandler {
     @Autowired
     ObjectMapper objectMapper;
 
+    private Collection<WebSocketSession> sessions = Collections.synchronizedCollection(new ArrayList<>());
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        sessions.add(session);
         gameEventService.newObserver(session::isOpen)
                 .onEvent(gameEvent -> {
                     try {
@@ -74,5 +82,16 @@ public class GameEventSocketHandler extends TextWebSocketHandler {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void sendPingMessage() {
+        sessions.removeIf(it -> !it.isOpen());
+        sessions.forEach(it -> {
+            try {
+                it.sendMessage(new PingMessage());
+            } catch (IOException e) {
+            }
+        });
     }
 }
