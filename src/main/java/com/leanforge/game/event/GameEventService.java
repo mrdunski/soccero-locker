@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,7 +43,7 @@ public class GameEventService {
     }
 
     public void emmitGameFinished(QueuedGame game) {
-        emmit(new GameFinishedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers())));
+        emmit(new GameFinishedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()), game.getCreationDate(), game.getStartDate(), OffsetDateTime.now()));
     }
 
     public void emmitGameStarted(QueuedGame game) {
@@ -58,11 +59,11 @@ public class GameEventService {
     }
 
     public GameEvent createGameStartedEvent(QueuedGame game) {
-        return new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()));
+        return new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()), game.getCreationDate(), game.getStartDate(), game.getStartDate().plusMinutes(30));
     }
 
     public GameEvent createGameAddedEvent(QueuedGame game) {
-        return new GameAddedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()));
+        return new GameAddedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()), game.getCreationDate());
     }
 
     private List<String> slackIdsToNames(List<String> ids) {
