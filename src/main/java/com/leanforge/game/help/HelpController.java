@@ -32,6 +32,7 @@ public class HelpController {
                 ":pushpin: `+ @player1 @player2 ...` - add somebody to pending game \n" +
                 ":pushpin: `- @player1 @player2 ...` - remove somebody\n" +
                 ":pushpin: (:fast_forward:) on pending game message - force start pending game\n" +
-                ":pushpin: `forceStart` on pending game message thread - force start pending game";
+                ":pushpin: `forceStart` on pending game message thread - force start pending game\n" +
+                ":pushpin: Game status page: http://game-status.playroom.leanforge.pl";
     }
 }
