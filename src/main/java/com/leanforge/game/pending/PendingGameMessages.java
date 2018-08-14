@@ -51,7 +51,7 @@ public class PendingGameMessages {
             return Optional.empty();
         }
 
-        return Optional.of("\n\nGames in queue: \n> " + count);
+        return Optional.of("\n\nGames in queue: \n> " + count + "\n> http://game-status.playroom.leanforge.pl/");
     }
 
     private Optional<String> otherPendingGamesFor(PendingGame skip) {
