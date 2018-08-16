@@ -61,9 +61,9 @@ public class GameEventService {
     public GameEvent createGameStartedEvent(QueuedGame game) {
         OffsetDateTime timeout;
         if (game.getStartDate() == null) {
-            timeout = OffsetDateTime.now().plusMinutes(30);
+            timeout = OffsetDateTime.now().plusMinutes(17);
         } else {
-            timeout = game.getStartDate().plusMinutes(30);
+            timeout = game.getStartDate().plusMinutes(17);
         }
         return new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()), game.getCreationDate(), game.getStartDate(), timeout);
     }

@@ -57,7 +57,7 @@ public class ConsoleLockingService {
     @Scheduled(fixedDelay = 1000)
     public synchronized void removeOldGames() {
         queuedGameService.findStartedGame()
-                .filter(QueuedGame.startedBefore(30, ChronoUnit.MINUTES))
+                .filter(QueuedGame.startedBefore(17, ChronoUnit.MINUTES))
                 .ifPresent( game -> {
                     endGameAndMoveQueueUp(game);
                     slackService.sendChannelMessage(game.getChannelId(), creatorNotifier(game) + " your game has been ended by timeout!");
