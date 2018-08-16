@@ -30,7 +30,8 @@ class ConsoleLockingServiceSpecification extends Specification {
 
 
     @Subject
-    ConsoleLockingService lockingService = new ConsoleLockingService(queuedGameService, queuedGameMessages, pendingGameService, pendingGameMessages, messageBindingService, slackService, gameEventService)
+    ConsoleLockingService lockingService = new ConsoleLockingService(
+            queuedGameService, queuedGameMessages, pendingGameService, pendingGameMessages, messageBindingService, slackService, gameEventService, 30)
 
     def setup() {
         pendingGameService.allPendingGames() >> { Stream.empty() }

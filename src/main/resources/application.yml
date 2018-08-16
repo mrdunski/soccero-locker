@@ -5,6 +5,8 @@ slack:
 foosball:
   user: change-me
 
+game.timeout: 17
+
 logging:
   level:
     com.leanforge: DEBUG

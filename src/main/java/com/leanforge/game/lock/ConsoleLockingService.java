@@ -11,6 +11,7 @@ import com.leanforge.game.queue.QueuedGameService;
 import com.leanforge.game.slack.SlackMessage;
 import com.leanforge.game.slack.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ public class ConsoleLockingService {
     private final MessageBindingService messageBindingService;
     private final SlackService slackService;
     private final GameEventService gameEventService;
+    private final Integer timeout;
 
     @Autowired
     public ConsoleLockingService(QueuedGameService queuedGameService,
@@ -44,7 +46,8 @@ public class ConsoleLockingService {
                                  PendingGameMessages pendingGameMessages,
                                  MessageBindingService messageBindingService,
                                  SlackService slackService,
-                                 GameEventService gameEventService) {
+                                 GameEventService gameEventService,
+                                 @Value("${game.timeout}") Integer timeout) {
         this.queuedGameService = queuedGameService;
         this.queuedGameMessages = queuedGameMessages;
         this.pendingGameService = pendingGameService;
@@ -52,12 +55,13 @@ public class ConsoleLockingService {
         this.messageBindingService = messageBindingService;
         this.slackService = slackService;
         this.gameEventService = gameEventService;
+        this.timeout = timeout;
     }
 
     @Scheduled(fixedDelay = 1000)
     public synchronized void removeOldGames() {
         queuedGameService.findStartedGame()
-                .filter(QueuedGame.startedBefore(17, ChronoUnit.MINUTES))
+                .filter(QueuedGame.startedBefore(timeout, ChronoUnit.MINUTES))
                 .ifPresent( game -> {
                     endGameAndMoveQueueUp(game);
                     slackService.sendChannelMessage(game.getChannelId(), creatorNotifier(game) + " your game has been ended by timeout!");

@@ -9,6 +9,7 @@ import com.leanforge.game.slack.SlackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -28,9 +29,12 @@ public class GameEventService {
 
     private final SlackService slackService;
 
+    private final Integer timeout;
+
     @Autowired
-    public GameEventService(SlackService slackService) {
+    public GameEventService(SlackService slackService, @Value("${game.timeout}") Integer timeout) {
         this.slackService = slackService;
+        this.timeout = timeout;
     }
 
     public GameEventObserver newObserver(Supplier<Boolean> isActive) {
@@ -61,9 +65,9 @@ public class GameEventService {
     public GameEvent createGameStartedEvent(QueuedGame game) {
         OffsetDateTime timeout;
         if (game.getStartDate() == null) {
-            timeout = OffsetDateTime.now().plusMinutes(17);
+            timeout = OffsetDateTime.now().plusMinutes(this.timeout);
         } else {
-            timeout = game.getStartDate().plusMinutes(17);
+            timeout = game.getStartDate().plusMinutes(this.timeout);
         }
         return new GameStartedEvent(toGameType(game.getChannelId()), game.getId(), slackIdsToNames(game.getPlayers()), game.getCreationDate(), game.getStartDate(), timeout);
     }

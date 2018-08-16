@@ -18,7 +18,7 @@ class GameEventServiceSpecification extends Specification {
     }
 
     @Subject
-    GameEventService gameEventService = new GameEventService(slackService)
+    GameEventService gameEventService = new GameEventService(slackService, 30)
 
     def "should inform all active observers"() {
         given:
