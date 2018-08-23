@@ -47,7 +47,7 @@ class ConsoleLockingServiceSpecification extends Specification {
 
         then:
         1 * queuedGameService.scheduleGame('ch1', 'us21', 5, _, _) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: OffsetDateTime.now(), id: 'abc123')
-        1 * slackService.sendChannelMessage('ch1', _, 'x') >> new SlackMessage('bcd', 'ch1', 'test')
+        1 * slackService.sendChannelMessage('ch1', _, 'x', 'rewind') >> new SlackMessage('bcd', 'ch1', 'test')
         1 * messageBindingService.bind(_, 'abc123') >> {
             assert it[0].timestamp == 'bcd'
         }
@@ -98,7 +98,7 @@ class ConsoleLockingServiceSpecification extends Specification {
             waitingGame.startDate = OffsetDateTime.now()
             Optional.of(waitingGame)
         }
-        1 * slackService.sendChannelMessage('ch02', _, 'x')
+        1 * slackService.sendChannelMessage('ch02', _, 'x', 'rewind')
 
     }
 
