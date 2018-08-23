@@ -4,7 +4,6 @@ import com.leanforge.game.pending.PendingGame;
 import com.leanforge.game.slack.SlackMessage;
 import com.leanforge.game.slack.listener.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +40,11 @@ public class ConsoleLockingController {
     @SlackReactionListener("x")
     public void endGame(SlackMessage message) {
         consoleLockingService.endGame(message);
+    }
+
+    @SlackReactionListener("rewind")
+    public void reAddToTheQueue(SlackMessage message) {
+        consoleLockingService.reAddGame(message);
     }
 
     @SlackReactionListener(value = "heavy_plus_sign", action = ADD)

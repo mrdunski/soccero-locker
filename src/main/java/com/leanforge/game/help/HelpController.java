@@ -28,6 +28,7 @@ public class HelpController {
                 ":pushpin: `startGame` - add game directly to the queue.\n" +
                 ":pushpin: `queueStatus` - print current queue status.\n" +
                 ":pushpin: (:x:) on `go go go` message - end the game and informs players in queue.\n" +
+                ":pushpin: (:rewind:) on `go go go` message - postpone the game (move the game to the end of the queue).\n" +
                 ":pushpin: (:heavy_plus_sign:) on pending game message - add/remove yourself to the game.\n" +
                 ":pushpin: `+ @player1 @player2 ...` - add somebody to pending game \n" +
                 ":pushpin: `- @player1 @player2 ...` - remove somebody\n" +
