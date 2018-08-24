@@ -1,11 +1,8 @@
 management.security.enabled: false
-slack:
-  token: change-me
 
-foosball:
-  user: change-me
-
-game.timeout: 17
+slack.token: change-me
+foosball.user: change-me
+game.timeout: 30
 
 logging:
   level:

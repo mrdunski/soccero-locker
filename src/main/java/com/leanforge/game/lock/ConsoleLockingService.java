@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,8 +28,9 @@ public class ConsoleLockingService {
 
     private static final String GO_MESSAGE_TEMPLATE = "%s go go go! (end game with :x:)%s";
     private static final String HERE = "<!here|@here>";
-    public static final String GAME_FINISHED_MESSAGE = "Game finished in: ";
-    public static final String WAIT_MESSAGE = ":horse: Hold your horses. Another game is in progress. Queue: \n";
+    public static final String GAME_FINISHED_MESSAGE = ":horse_racing: Game finished in: ";
+    public static final String GAME_POSTPONED_MESSAGE = ":blowfish: Game was postponed by: ";
+    public static final String WAIT_MESSAGE = ":horse: Hold your horses. Current queue: \n";
 
     private final QueuedGameService queuedGameService;
     private final QueuedGameMessages queuedGameMessages;
@@ -60,12 +62,17 @@ public class ConsoleLockingService {
 
     @Scheduled(fixedDelay = 1000)
     public synchronized void removeOldGames() {
-        queuedGameService.findStartedGame()
+        Optional<QueuedGame> startedGame = queuedGameService.findStartedGame();
+        startedGame
                 .filter(QueuedGame.startedBefore(timeout, ChronoUnit.MINUTES))
                 .ifPresent( game -> {
                     endGameAndMoveQueueUp(game);
-                    slackService.sendChannelMessage(game.getChannelId(), creatorNotifier(game) + " your game has been ended by timeout!");
+                    slackService.sendChannelMessage(game.getChannelId(), ":turtle: " + creatorNotifier(game) + " your game has been ended by timeout!");
                 });
+        if (!startedGame.isPresent()) {
+            moveQueueUp();
+            updatePendingGames();
+        }
     }
 
     private String creatorNotifier(QueuedGame game) {
@@ -77,7 +84,7 @@ public class ConsoleLockingService {
     }
 
     public void startGame(SlackMessage slackMessage, int priority, String comment) {
-        startGame(slackMessage.getChannelId(), slackMessage.getSenderId(), priority, Collections.emptyList(), comment);
+        startGame(slackMessage.getChannelId(), slackMessage.getSenderId(), priority, Collections.emptyList(), comment, null);
         updatePendingGames();
     }
 
@@ -99,15 +106,26 @@ public class ConsoleLockingService {
                 .ifPresent(game -> endGameAndUpdateMessage(gamePointer, game));
     }
 
-    public void reAddGame(SlackMessage gamePointer) {
+    public void postponeGame(String userId, SlackMessage gamePointer) {
         messageBindingService.findBindingId(gamePointer)
                 .flatMap(queuedGameService::find)
-                .ifPresent(game -> reAddGame(gamePointer, game));
+                .ifPresent(game -> postponeGame(userId, gamePointer, game));
     }
 
-    private void reAddGame(SlackMessage gamePointer, QueuedGame game) {
-        endGameAndUpdateMessage(gamePointer, game);
-        startGame(game.getChannelId(), game.getCreatorId(), 5, game.getPlayers(), game.getComment());
+    private void postponeGame(String userId, SlackMessage gamePointer, QueuedGame game) {
+        ZoneId userTimezone = slackService.getUserTimezone(userId);
+        queuedGameService.endGame(game.getId());
+        gameEventService.emmitGameFinished(game);
+        slackService.updateMessage(gamePointer, GAME_POSTPONED_MESSAGE + "<@" + userId + ">");
+        OffsetDateTime postpone = OffsetDateTime
+                .now()
+                .plusMinutes(5)
+                .withSecond(0)
+                .withNano(0)
+                .atZoneSameInstant(userTimezone)
+                .toOffsetDateTime();
+        startGame(game.getChannelId(), game.getCreatorId(), game.getPriority(), game.getPlayers(), game.getComment(), postpone);
+        updatePendingGames();
     }
 
     public void printQueueStatus(SlackMessage slackMessage) {
@@ -223,15 +241,15 @@ public class ConsoleLockingService {
     }
 
     private void startConsoleGame(PendingGame game) {
-        startGame(game.getChannelId(), game.getCreatorId(), 5, game.getPlayerIds(), null);
+        startGame(game.getChannelId(), game.getCreatorId(), 5, game.getPlayerIds(), null, null);
     }
 
     private void startFoosballGame(PendingGame game) {
         slackService.sendChannelMessage(game.getChannelId(), pendingGameMessages.createFoosballGameMessage(game));
     }
 
-    private void startGame(String channelId, String creatorId, int priority, List<String> players, String comments) {
-        QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId, priority, players, comments);
+    private void startGame(String channelId, String creatorId, int priority, List<String> players, String comments, OffsetDateTime postponeDate) {
+        QueuedGame game = queuedGameService.scheduleGame(channelId, creatorId, priority, players, comments, postponeDate);
         gameEventService.emmitGameAdded(game);
         if (game.isStarted()) {
             SlackMessage statusMessage = slackService.sendChannelMessage(channelId, goGameMessage(game), "x", "rewind");

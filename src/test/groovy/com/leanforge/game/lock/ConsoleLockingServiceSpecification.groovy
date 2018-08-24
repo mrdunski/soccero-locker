@@ -46,7 +46,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         lockingService.startGame(message)
 
         then:
-        1 * queuedGameService.scheduleGame('ch1', 'us21', 5, _, _) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: OffsetDateTime.now(), id: 'abc123')
+        1 * queuedGameService.scheduleGame('ch1', 'us21', 5, _, _, _) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: OffsetDateTime.now(), id: 'abc123')
         1 * slackService.sendChannelMessage('ch1', _, 'x', 'rewind') >> new SlackMessage('bcd', 'ch1', 'test')
         1 * messageBindingService.bind(_, 'abc123') >> {
             assert it[0].timestamp == 'bcd'
@@ -63,7 +63,7 @@ class ConsoleLockingServiceSpecification extends Specification {
         lockingService.startGame(message)
 
         then:
-        1 * queuedGameService.scheduleGame('ch1', 'us21', 5, _, _) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: null, id: 'abc123')
+        1 * queuedGameService.scheduleGame('ch1', 'us21', 5, _, _, _) >> new QueuedGame(channelId: 'ch1', creatorId: 'us21', startDate: null, id: 'abc123')
         1 * slackService.sendChannelMessage('ch1', ConsoleLockingService.WAIT_MESSAGE + '> ') >> new SlackMessage('bcd', 'ch1', 'test')
     }
 

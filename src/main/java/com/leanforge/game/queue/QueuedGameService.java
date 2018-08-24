@@ -19,7 +19,7 @@ public class QueuedGameService {
         this.repository = repository;
     }
 
-    public QueuedGame scheduleGame(String channelId, String creatorId, int priority, List<String> players, String comment) {
+    public QueuedGame scheduleGame(String channelId, String creatorId, int priority, List<String> players, String comment, OffsetDateTime postponeDate) {
         QueuedGame game = new QueuedGame();
         game.setCreatorId(creatorId);
         game.setCreationDate(OffsetDateTime.now());
@@ -27,8 +27,9 @@ public class QueuedGameService {
         game.setPriority(priority);
         game.setComment(comment);
         game.setPlayers(players);
+        game.setPostponeDate(postponeDate);
 
-        if (!findStartedGame().isPresent()) {
+        if (postponeDate == null && !findStartedGame().isPresent()) {
             game.setStartDate(OffsetDateTime.now());
         }
 
@@ -77,8 +78,10 @@ public class QueuedGameService {
     }
 
     private Optional<QueuedGame> findTopPriorityGame() {
+        OffsetDateTime now = OffsetDateTime.now();
         return repository.findAllByOrderByCreationDateAsc()
                 .filter(it -> it.getStartDate() == null)
+                .filter(it -> it.getPostponeDate() == null || it.getPostponeDate().isBefore(now))
                 .min(
                         Comparator.comparing(QueuedGame::getPriority)
                                 .thenComparing(QueuedGame::getCreationDate)

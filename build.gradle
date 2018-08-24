@@ -86,6 +86,8 @@ spec:
           value: U72NDDQP7
         - name: _JAVA_OPTIONS
           value: -Xmx256m -Xms64m
+        - name: GAME_TIMEOUT
+          value: 17
         livenessProbe:
           initialDelaySeconds: 60
           httpGet:

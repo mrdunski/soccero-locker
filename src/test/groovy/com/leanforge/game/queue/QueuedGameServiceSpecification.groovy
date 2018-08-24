@@ -17,7 +17,7 @@ class QueuedGameServiceSpecification extends Specification {
         repository.findAllByOrderByCreationDateAsc() >> [].stream()
 
         when:
-        def game = queuedGameService.scheduleGame('ch1', 'u1', 5, [], '')
+        def game = queuedGameService.scheduleGame('ch1', 'u1', 5, [], '', null)
 
         then:
         game.channelId == 'ch1'
@@ -32,7 +32,7 @@ class QueuedGameServiceSpecification extends Specification {
         repository.findAllByOrderByCreationDateAsc() >> [new QueuedGame(startDate: OffsetDateTime.now())].stream()
 
         when:
-        def game = queuedGameService.scheduleGame('ch1', 'u1', 5, [], '')
+        def game = queuedGameService.scheduleGame('ch1', 'u1', 5, [], '', null)
 
         then:
         game.channelId == 'ch1'

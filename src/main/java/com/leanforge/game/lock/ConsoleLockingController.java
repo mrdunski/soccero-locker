@@ -43,8 +43,8 @@ public class ConsoleLockingController {
     }
 
     @SlackReactionListener("rewind")
-    public void reAddToTheQueue(SlackMessage message) {
-        consoleLockingService.reAddGame(message);
+    public void postponeGame(@SlackUserId String userId, SlackMessage message) {
+        consoleLockingService.postponeGame(userId, message);
     }
 
     @SlackReactionListener(value = "heavy_plus_sign", action = ADD)

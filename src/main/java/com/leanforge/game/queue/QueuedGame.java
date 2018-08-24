@@ -1,7 +1,6 @@
 package com.leanforge.game.queue;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,6 +21,7 @@ public class QueuedGame {
     private String channelId;
     private OffsetDateTime creationDate;
     private OffsetDateTime startDate;
+    private OffsetDateTime postponeDate;
     private int priority = 5;
     private List<String> players = new ArrayList<>();
     private String comment;
@@ -92,5 +92,13 @@ public class QueuedGame {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public OffsetDateTime getPostponeDate() {
+        return postponeDate;
+    }
+
+    public void setPostponeDate(OffsetDateTime postponeDate) {
+        this.postponeDate = postponeDate;
     }
 }

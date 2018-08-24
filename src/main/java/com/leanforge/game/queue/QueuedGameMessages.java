@@ -29,6 +29,11 @@ public class QueuedGameMessages {
             return String.format(":video_game: %s (added by %s at %s), started at %s _(p%s)_%s", channel, name, addedOn, startedOn, game.getPriority(),  commentPart(game));
         }
 
+        if (game.getPostponeDate() != null) {
+            String postpone = DateTimeFormatter.ISO_TIME.format(OffsetDateTime.from(game.getPostponeDate()).atZoneSameInstant(userTimezone));
+            return String.format(":video_game: %s (added by %s postponed until: %s) _(p%s)_%s", channel, name, postpone, game.getPriority(), commentPart(game));
+        }
+
         return String.format(":video_game: %s (added by %s at %s) _(p%s)_%s", channel, name, addedOn, game.getPriority(), commentPart(game));
     }
 
