@@ -6,7 +6,7 @@ public interface QueuedGameRepository {
     <S extends QueuedGame> S save(S queuedGame);
     Stream<QueuedGame> findAllByOrderByCreationDateAsc();
 
-    int count();
+    long count();
     void delete(String id);
     QueuedGame findOne(String id);
 }
