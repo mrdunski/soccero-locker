@@ -10,7 +10,6 @@ import com.ullink.slack.simpleslackapi.SlackSession
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
-import org.springframework.stereotype.Repository
 import spock.mock.DetachedMockFactory
 
 import java.util.concurrent.CopyOnWriteArraySet
@@ -57,6 +56,11 @@ class TestApplication {
         @Override
         Stream<QueuedGame> findAllByOrderByCreationDateAsc() {
             return games.sort({it.creationDate}).stream()
+        }
+
+        @Override
+        int count() {
+            return 0
         }
 
         void delete(String id) {

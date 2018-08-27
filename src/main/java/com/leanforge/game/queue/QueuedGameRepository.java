@@ -5,6 +5,8 @@ import java.util.stream.Stream;
 public interface QueuedGameRepository {
     <S extends QueuedGame> S save(S queuedGame);
     Stream<QueuedGame> findAllByOrderByCreationDateAsc();
+
+    int count();
     void delete(String id);
     QueuedGame findOne(String id);
 }

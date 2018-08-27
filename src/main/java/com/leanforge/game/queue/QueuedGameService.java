@@ -91,4 +91,8 @@ public class QueuedGameService {
     public Optional<QueuedGame> find(String gameId) {
         return Optional.ofNullable(repository.findOne(gameId));
     }
+
+    public boolean isQueueEmpty() {
+        return repository.count() == 0;
+    }
 }

@@ -69,7 +69,7 @@ public class ConsoleLockingService {
                     endGameAndMoveQueueUp(game);
                     slackService.sendChannelMessage(game.getChannelId(), ":turtle: " + creatorNotifier(game) + " your game has been ended by timeout!");
                 });
-        if (!startedGame.isPresent()) {
+        if (!startedGame.isPresent() && !queuedGameService.isQueueEmpty()) {
             moveQueueUp();
             updatePendingGames();
         }
