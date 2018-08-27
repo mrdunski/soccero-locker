@@ -59,7 +59,7 @@ class TestApplication {
         }
 
         @Override
-        int count() {
+        long count() {
             return 0
         }
 
