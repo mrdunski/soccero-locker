@@ -77,7 +77,7 @@ public class ConsoleLockingController {
         consoleLockingService.findPlayers(message, 4, PendingGame.GameType.FOOSBALL);
     }
 
-    @SlackMessageListener("findPlayers ([23456789])")
+    @SlackMessageListener("findPlayers (\\d+)")
     public void findPlayers(SlackMessage message, @SlackMessageRegexGroup(1) String playersCount) {
         consoleLockingService.findPlayers(message, Integer.parseInt(playersCount));
     }
